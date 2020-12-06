@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { pluck, share } from 'rxjs/operators';
+import { concat, interval, merge, Subject } from 'rxjs';
+import { map, pluck, share } from 'rxjs/operators';
 
 @Component({
   selector: 'about',
@@ -12,23 +12,13 @@ export class AboutComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    const interval1$ = interval(1000);
 
-    const routeEnd = new Subject<{ data: any, url: string }>();
+    const interval2$ = interval1$.pipe(map((val) => val * 10));
 
-    // grab url and share with subscribers
-    const lastUrl = routeEnd.pipe(
-      pluck('url'),
-      share()
-    );
+    const result$ = concat(interval1$, interval2$);
 
-    // initial subscriber required
-    const initialSubscriber = lastUrl.subscribe((x) => console.log('initial sub = ' + x));
-
-    // simulate route change
-    routeEnd.next({ data: {}, url: 'my-path' });
-
-    // nothing logged
-    const lateSubscriber = lastUrl.subscribe((x) => console.log('late sub = ' + x));
+    result$.subscribe(console.log);
   }
 
 }
