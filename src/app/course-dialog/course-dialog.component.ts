@@ -41,7 +41,7 @@ export class CourseDialogComponent implements OnInit, AfterViewInit {
     this.form.valueChanges
       .pipe(
         filter(() => this.form.valid),
-        concatMap((changes) => this.saveCourse(changes as Course))
+        mergeMap((changes) => this.saveCourse(changes as Course))
       )
       .subscribe();
   }
