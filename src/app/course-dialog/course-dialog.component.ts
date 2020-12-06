@@ -1,11 +1,11 @@
-import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { Course } from "../model/course";
-import { FormBuilder, Validators, FormGroup } from "@angular/forms";
+import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import * as moment from 'moment';
 import { fromEvent, Observable } from 'rxjs';
-import { concatMap, distinctUntilChanged, exhaustMap, filter, mergeMap } from 'rxjs/operators';
 import { fromPromise } from 'rxjs/internal-compatibility';
+import { exhaustMap, filter, mergeMap } from 'rxjs/operators';
+import { Course } from "../model/course";
 
 @Component({
   selector: 'course-dialog',
@@ -47,7 +47,12 @@ export class CourseDialogComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-
+    fromEvent(this.saveButton.nativeElement, 'click')
+      .pipe(
+        filter(() => this.form.valid),
+        exhaustMap(() => this.saveCourse(this.form.value as Course))
+      )
+      .subscribe();
   }
 
   saveCourse(course: Course): Observable<any> {
