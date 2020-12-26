@@ -1,7 +1,8 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { fromEvent, Observable } from 'rxjs';
-import { map, throttleTime } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
+import { debug, RxjsLoggingLevel, setRxjsLogginLevel } from '../common/debug';
 import { createHttpObservable } from '../common/util';
 import { Course } from "../model/course";
 import { Lesson } from '../model/lesson';
@@ -23,16 +24,25 @@ export class CourseComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.courseId = this.route.snapshot.params['id'];
 
-    this.course$ = createHttpObservable(`/api/courses/${this.courseId}`);
+    this.course$ = createHttpObservable(`/api/courses/${this.courseId}`)
+      .pipe(
+        debug(RxjsLoggingLevel.INFO, 'course '),
+      );
+
+    setRxjsLogginLevel(RxjsLoggingLevel.TRACE);
   }
 
   ngAfterViewInit() {
-    fromEvent(this.input.nativeElement, 'keyup')
+    this.lessons$ = fromEvent(this.input.nativeElement, 'keyup')
       .pipe(
+        debounceTime(400),
         map((event: any) => event.target.value),
-        //throttle(() => timer(2000)),
-        throttleTime(2000),
-      ).subscribe((value) => console.log(value));
+        debug(RxjsLoggingLevel.TRACE, 'search '),
+        startWith(''),
+        distinctUntilChanged(),
+        switchMap((search) => this.loadLessons(search)),
+        debug(RxjsLoggingLevel.DEBUG, 'lessons '),
+      );
   }
 
   loadLessons(search = ''): Observable<Lesson[]> {
