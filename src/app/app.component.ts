@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { MenuService } from './menu.service';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,10 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'app';
+
+  constructor(private menuService: MenuService) { }
+
+  ngOnInit() {
+    this.menuService.state$.subscribe(val => console.log('AppComponent - ', val));
+  }
 }

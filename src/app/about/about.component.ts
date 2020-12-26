@@ -1,26 +1,28 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {concat, fromEvent, interval, noop, observable, Observable, of, timer, merge} from 'rxjs';
-import {delayWhen, filter, map, take, timeout} from 'rxjs/operators';
-import {createHttpObservable} from '../common/util';
-
+import { Component, OnInit } from '@angular/core';
+import { Subject } from 'rxjs';
+import { MenuService } from '../menu.service';
 
 @Component({
-    selector: 'about',
-    templateUrl: './about.component.html',
-    styleUrls: ['./about.component.css']
+  selector: 'about',
+  templateUrl: './about.component.html',
+  styleUrls: ['./about.component.css']
 })
 export class AboutComponent implements OnInit {
 
-    ngOnInit() {
+  constructor(private menuService: MenuService) { }
 
+  ngOnInit() {
+    this.menuService.state$.subscribe(val => console.log('AboutComponent - ', val));
 
-    }
+    const subject = new Subject();
+    const series$ = subject.asObservable();
 
+    series$.subscribe(console.log);
+
+    subject.next(1);
+    subject.next(2);
+    subject.next(3);
+    subject.complete();
+  }
 
 }
-
-
-
-
-
-
