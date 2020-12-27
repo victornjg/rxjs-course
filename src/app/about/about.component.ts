@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { AsyncSubject } from 'rxjs';
 import { MenuService } from '../menu.service';
 
 @Component({
@@ -14,7 +14,7 @@ export class AboutComponent implements OnInit {
   ngOnInit() {
     this.menuService.state$.subscribe(val => console.log('AboutComponent - ', val));
 
-    const subject = new BehaviorSubject(0);
+    const subject = new AsyncSubject();
     const series$ = subject.asObservable();
 
     series$.subscribe((val) => console.log('first sub: ', val));
