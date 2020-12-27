@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AsyncSubject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 import { MenuService } from '../menu.service';
 
 @Component({
@@ -14,7 +14,7 @@ export class AboutComponent implements OnInit {
   ngOnInit() {
     this.menuService.state$.subscribe(val => console.log('AboutComponent - ', val));
 
-    const subject = new AsyncSubject();
+    const subject = new ReplaySubject();
     const series$ = subject.asObservable();
 
     series$.subscribe((val) => console.log('first sub: ', val));
@@ -27,8 +27,14 @@ export class AboutComponent implements OnInit {
       series$.subscribe((val) => console.log('second sub: ', val));
 
       subject.next(4);
-      subject.complete();
+
+      setTimeout(() => {
+        subject.next(5);
+        subject.complete();
+      }, 1000);
     }, 3000);
+
+
   }
 
 }
