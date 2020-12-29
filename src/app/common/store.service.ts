@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, from, Observable } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { Course } from "../model/course";
 import { createHttpObservable } from "./util";
@@ -41,5 +41,31 @@ export class StoreService {
       map(courses => courses
         .filter(course => course.category == category))
     );
+  }
+
+  selectCourseById(courseId: number): Observable<Course> {
+    return this.courses$.pipe(
+      map(courses => courses
+        .find(course => course.id === courseId))
+    );
+  }
+
+  saveCourse(courseId: number, changes) {
+    const courses = this.subject.getValue();
+    const courseIndex = courses.findIndex((course: Course) => course.id === courseId);
+    const newCourses = [...courses];
+    const newCourse = {
+      ...courses[courseIndex],
+      ...changes,
+    } as Course;
+    newCourses[courseIndex] = newCourse
+    this.subject.next(newCourses);
+    return from(fetch(`/api/courses/${courseId}`, {
+      method: 'PUT',
+      body: JSON.stringify(changes),
+      headers: {
+        'content-type': 'application/json'
+      }
+    }));
   }
 }
