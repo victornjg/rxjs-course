@@ -2,6 +2,14 @@
 
     <h3>All Courses</h3>
 
+    <button (click)="navTest()">
+        Navigation test
+    </button>
+
+    <div *ngIf="alertConfig.show" style="border: solid 2px red;font-size: 24px;">
+        {{ alertConfig.message }}
+    </div>
+
     <mat-tab-group>
 
         <mat-tab label="Beginners">

@@ -1,6 +1,6 @@
 <div class="course">
 
-    <ng-container *ngIf="(course$ | async) as course">
+    <ng-container *ngIf="course">
 
         <h2>{{course?.description}}</h2>
 
@@ -33,9 +33,3 @@
 
 
 </div>
-
-
-
-
-
-

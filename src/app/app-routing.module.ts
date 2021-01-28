@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import {HomeComponent} from "./home/home.component";
-import {AboutComponent} from "./about/about.component";
-import {CourseComponent} from "./course/course.component";
+import { HomeComponent } from "./home/home.component";
+import { AboutComponent } from "./about/about.component";
+import { CourseComponent } from "./course/course.component";
+import { CourseResolver } from './resolvers/course.resolver';
 
 const routes: Routes = [
     {
@@ -16,7 +17,10 @@ const routes: Routes = [
     },
     {
         path: 'courses/:id',
-        component: CourseComponent
+        component: CourseComponent,
+        resolve: {
+            course: CourseResolver,
+        }
     },
     {
         path: "**",
@@ -25,7 +29,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
-  exports: [RouterModule]
+    imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
+    exports: [RouterModule]
 })
 export class AppRoutingModule { }

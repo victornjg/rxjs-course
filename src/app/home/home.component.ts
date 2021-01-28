@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, timer } from 'rxjs';
 import { delayWhen, finalize, map, retryWhen, shareReplay, tap } from 'rxjs/operators';
 import { createHttpObservable } from '../common/util';
@@ -14,7 +15,12 @@ export class HomeComponent implements OnInit {
   beginnerCourses$: Observable<Course[]>;
   advancedCourses$: Observable<Course[]>;
 
-  constructor() { }
+  alertConfig = {
+    show: false,
+    message: null,
+  };
+
+  constructor(private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
     const http$ = createHttpObservable('/api/courses');
@@ -42,6 +48,18 @@ export class HomeComponent implements OnInit {
     this.advancedCourses$ = courses$.pipe(
       map((courses: Course[]) => courses.filter((course: Course) => course.category === 'ADVANCED'))
     );
+
+    this.route.params.subscribe((params) => {
+      console.log('home - params -> ', params);
+    });
+
+    this.route.data.subscribe((data) => {
+      console.log('home - data -> ', data);
+    });
+  }
+
+  navTest(): void {
+    this.router.navigate(['/courses', 0], { state: { alertConfig: this.alertConfig } });
   }
 
 }

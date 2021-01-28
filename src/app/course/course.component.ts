@@ -16,27 +16,22 @@ export class CourseComponent implements OnInit, AfterViewInit {
   @ViewChild('searchInput', { static: true }) input: ElementRef;
 
   courseId: number;
-  course$: Observable<Course>;
+  course: Course;
   lessons$: Observable<Lesson[]>;
 
   constructor(private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.courseId = this.route.snapshot.params['id'];
+    this.course = this.route.snapshot.data.course;
+
+    console.log('ngOnInit - course -> ', this.course);
 
     setRxjsLogginLevel(RxjsLoggingLevel.DEBUG);
 
-    const course$ = createHttpObservable(`/api/courses/${this.courseId}`);
+    //const course$ = createHttpObservable(`/api/courses/${this.courseId}`);
 
-    const lessons$ = this.loadLessons();
-
-    forkJoin([course$, lessons$])
-      .subscribe(
-        ([course, lessons]) => {
-          console.log('course ', course);
-          console.log('lessons ', lessons);
-        },
-      );
+    this.lessons$ = this.loadLessons();
   }
 
   ngAfterViewInit() {
@@ -45,7 +40,7 @@ export class CourseComponent implements OnInit, AfterViewInit {
         debounceTime(400),
         map((event: any) => event.target.value),
         debug(RxjsLoggingLevel.TRACE, 'search '),
-        //startWith(''),
+        startWith(''),
         distinctUntilChanged(),
         switchMap((search) => this.loadLessons(search)),
         debug(RxjsLoggingLevel.DEBUG, 'lessons '),
